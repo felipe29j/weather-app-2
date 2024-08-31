@@ -63,19 +63,13 @@ A estrutura do projeto foi organizada para garantir clareza, modularidade e faci
 
 1. **Clonar o Repositório**
 
-    git clone https://github.com/seu_usuario/seu_repositorio.git
+    git clone https://github.com/felipe29j/weather-app-2.git
 
 
 2. **Instalar Dependências**
 
-    cd seu_repositorio
+    cd weather-app-2
     composer install
-
-
-### 2. Configuração do Banco de Dados
-
-
-
 
 
 ## Instruções para Desenvolvimento
