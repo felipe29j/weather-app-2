@@ -110,6 +110,6 @@ function fetchWeather e function fetchWeatherComparison
    - Acesse a aplicação em `http://localhost:8000`.
 
 
-# GIF da aplicação
+# GIF da aplicação funcionando
 
 ![GIF](https://github.com/felipe29j/weather-app-2/blob/main/public/images/demonstrao2024-08-31131508-ezgif.com-video-to-gif-converter.gif)
