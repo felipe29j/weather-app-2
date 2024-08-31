@@ -7,78 +7,106 @@ $(document).ready(function() {
         $('.container').removeClass('expanded');
     }
 
-    $('#buscar').on('click', function() {
-        expandContainer();
-        $('#historico').addClass('hidden');
-        $('#comparacao').addClass('hidden');
+    // Função para buscar a previsão do tempo para uma cidade
+    function fetchWeather(city) {
+        $.ajax({
+            url: `http://api.weatherstack.com/current`,
+            type: 'GET',
+            data: {
+                access_key: 'b5a036aa82247a78c97e9afe8f823bce',
+                query: city
+            },
+            success: function(data) {
+                if (data && data.current) {
+                    const weatherIcon = data.current.weather_icons[0]; // Obtém o URL do ícone do clima
+                    $('#resultado').html(`
+                        <h2>Previsão para ${city}</h2>
+                        <img src="${weatherIcon}" alt="Ícone do clima" class="weather-icon"/>
+                        <p>Temperatura: ${data.current.temperature}°C</p>
+                        <p>Condição: ${data.current.weather_descriptions[0]}</p>
+                        <p>Umidade: ${data.current.humidity}%</p>
+                        <p>Vento: ${data.current.wind_speed} km/h</p>
+                        <p>Visibilidade: ${data.current.visibility} km</p>
+                    `).removeClass('hidden');
 
-        const cidade = $('#cidade').val();
-        const cep = $('#cep').val();
+                    // Requisição POST com CSRF Token
+                    $.ajax({
+                        url: '/history',
+                        type: 'POST',
+                        data: JSON.stringify({
+                            city: data.location.name,
+                            temperature: data.current.temperature,
+                            condition: data.current.weather_descriptions[0],
+                            humidity: data.current.humidity,
+                            wind_speed: data.current.wind_speed,
+                            visibility: data.current.visibility
+                        }),
+                        contentType: 'application/json',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                console.log('Previsão salva no histórico');
+                            } else {
+                                console.error('Falha ao salvar previsão no histórico:', response);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.error('Erro ao enviar dados para o servidor:', textStatus, errorThrown);
+                        }
+                    });
+                } else {
+                    alert('Dados de previsão do tempo não encontrados.');
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Não foi possível obter a previsão do tempo.');
+            }
+        });
+    }
 
+    // Função para buscar cidade usando o CEP
+    function fetchCityFromCep(cep) {
         $.ajax({
             url: `https://viacep.com.br/ws/${cep}/json/`,
             type: 'GET',
             success: function(data) {
-                $('#cidade').val(data.localidade);
-                fetchWeather(data.localidade);
+                if (data && data.localidade) {
+                    $('#cidade').val(data.localidade);
+                } else {
+                    alert('Cidade não encontrada para o CEP informado.');
+                }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert('Erro ao consultar CEP.');
             }
         });
+    }
 
-        function fetchWeather(city) {
-            $.ajax({
-                url: `http://api.weatherstack.com/current?access_key=b5a036aa82247a78c97e9afe8f823bce&query=${city}`,
-                type: 'GET',
-                success: function(data) {
-                    if (data && data.current) {
-                        const weatherIcon = data.current.weather_icons[0]; // Obtém o URL do ícone do clima
-                        $('#resultado').html(`
-                            <h2>Previsão para ${city}</h2>
-                            <img src="${weatherIcon}" alt="Ícone do clima" class="weather-icon"/>
-                            <p>Temperatura: ${data.current.temperature}°C</p>
-                            <p>Condição: ${data.current.weather_descriptions[0]}</p>
-                            <p>Umidade: ${data.current.humidity}%</p>
-                            <p>Vento: ${data.current.wind_speed} km/h</p>
-                            <p>Visibilidade: ${data.current.visibility} km</p>
-                        `).removeClass('hidden');
+    $('#buscar').on('click', function() {
+        expandContainer();
+        $('#historico').addClass('hidden');
+        $('#comparacao').addClass('hidden');
+      
+        const cidade = $('#cidade').val();
+        const cep = $('#cep').val();
 
-                        // Requisição POST com CSRF Token
-                        $.ajax({
-                            url: '/history',
-                            type: 'POST',
-                            data: JSON.stringify({
-                                city: data.location.name,
-                                temperature: data.current.temperature,
-                                condition: data.current.weather_descriptions[0],
-                                humidity: data.current.humidity,
-                                wind_speed: data.current.wind_speed,
-                                visibility: data.current.visibility
-                            }),
-                            contentType: 'application/json',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    console.log('Previsão salva no histórico');
-                                } else {
-                                    console.error('Falha ao salvar previsão no histórico:', response);
-                                }
-                            },
-                            error: function(jqXHR, textStatus, errorThrown) {
-                                console.error('Erro ao enviar dados para o servidor:', textStatus, errorThrown);
-                            }
-                        });
-                    } else {
-                        alert('Dados de previsão do tempo não encontrados.');
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert('Não foi possível obter a previsão do tempo.');
+        if (cidade) {
+            fetchWeather(cidade);
+        } else if (cep) {
+            fetchCityFromCep(cep);
+            // Verifica se o nome da cidade está preenchido após buscar pelo CEP
+            setTimeout(function() {
+                const cidadeAtualizada = $('#cidade').val();
+                if (cidadeAtualizada) {
+                    fetchWeather(cidadeAtualizada);
+                } else {
+                    alert('Não foi possível determinar a cidade a partir do CEP.');
                 }
-            });
+            }, 1000); // Atraso para garantir que a cidade seja preenchida após a consulta do CEP
+        } else {
+            alert('Por favor, informe um CEP ou uma cidade.');
         }
     });
 
@@ -86,6 +114,8 @@ $(document).ready(function() {
         expandContainer();
         $('#resultado').addClass('hidden');
         $('#comparacao').addClass('hidden');
+        $('#cidade').val('');
+        $('#cep').val('');
 
         $.get('/history', function(data) {
             if (Array.isArray(data)) {
@@ -116,14 +146,20 @@ $(document).ready(function() {
         expandContainer();
         $('#resultado').addClass('hidden');
         $('#historico').addClass('hidden');
+        $('#cidade').val('');
+        $('#cep').val('');
 
         const cidade1 = $('#cidade1').val();
         const cidade2 = $('#cidade2').val();
 
         function fetchWeatherComparison(city, callback) {
             $.ajax({
-                url: `http://api.weatherstack.com/current?access_key=b5a036aa82247a78c97e9afe8f823bce&query=${city}`,
+                url: `http://api.weatherstack.com/current`,
                 type: 'GET',
+                data: {
+                    access_key: 'b5a036aa82247a78c97e9afe8f823bce',
+                    query: city
+                },
                 success: function(data) {
                     callback(null, data);
                 },
