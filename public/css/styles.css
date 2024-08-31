@@ -1,0 +1,153 @@
+/* Estilos Globais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* CSS para tamanho expandido */
+.container.expanded {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: auto; /* Ajuste conforme necessário */
+}
+
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin: 0;
+    color: #333;
+}
+
+h2 {
+    color: #555;
+}
+
+/* Seção de Consulta */
+.search-section {
+    margin-bottom: 20px;
+}
+
+.input-field {
+    width: calc(50% - 10px);
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 10px;
+
+}
+
+.input-field:last-child {
+    margin-right: 0;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Resultados e Histórico */
+.resultado, .historico, .comparacao {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.historico .historico-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+border: 1px solid #ddd;
+border-radius: 4px;
+}
+
+.historico .historico-item h3 {
+margin: 0;
+color: #333;
+}
+
+.historico .historico-item p {
+margin: 5px 0;
+color: #555;
+}
+
+/* Seção de Comparação */
+.compare-section {
+margin-top: 20px;
+}
+
+.compare-section .comparacao {
+margin-top: 20px;
+padding: 20px;
+background-color: #f9f9f9;
+border: 1px solid #ddd;
+border-radius: 4px;
+}
+
+.compare-section .comparacao div {
+margin-bottom: 20px;
+}
+
+.compare-section .comparacao h3 {
+margin: 0;
+color: #333;
+}
+
+.compare-section .comparacao p {
+margin: 5px 0;
+color: #555;
+}
+
+/* Estilo para esconder as seções inicialmente */
+.hidden {
+    display: none;
+}
+
+
+.weather-icon {
+    width: 50px;
+    height: 50px;
+    vertical-align: middle;
+}
+
+.comparacao-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.comparacao-item img {
+    display: block;
+    margin: 0 auto;
+}
